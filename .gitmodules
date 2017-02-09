@@ -1,0 +1,3 @@
+[submodule "benchmarks/vendor/elm-benchmark"]
+	path = benchmarks/vendor/elm-benchmark
+	url = https://github.com/BrianHicks/elm-benchmark
