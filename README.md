@@ -34,12 +34,14 @@ This advantage is mainly found on sets of 10 or fewer items.
 ### `insert`
 
 `Dict.Avl.insert` is about half as fast as `Dict.insert`, on average.
+This disadvantage is mainly found on sets of 10 or more items.
 
 ![insert performance](docs/insert-performance.png)
 
 ### `remove`
 
 `Dict.Avl.remove` is about half as fast as `Dict.insert`, on average.
+This disadvantage is mainly found on sets of 10 or more items.
 
 ![remove performance](docs/remove-performance.png)
 
