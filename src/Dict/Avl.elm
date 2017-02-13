@@ -10,8 +10,8 @@ module Dict.Avl
         , member
         , get
         , size
-          -- , keys
-          -- , values
+        , keys
+        , values
         , toList
         , fromList
         , map
@@ -19,10 +19,10 @@ module Dict.Avl
         , foldr
         , filter
         , partition
-          -- , union
-          -- , intersect
-          -- , diff
-          -- , merge
+        , union
+        , intersect
+        , diff
+        , merge
         )
 
 {-| A dictionary mapping unique keys to values. The keys can be any comparable
@@ -38,7 +38,7 @@ Insert, remove, and query operations all take *O(log n)* time.
 @docs empty, singleton, insert, update, remove
 
 # Query
-@docs isEmpty, member, get, size
+@docs isEmpty, member, get, size, keys, values
 
 # Lists
 @docs toList, fromList
@@ -47,6 +47,7 @@ Insert, remove, and query operations all take *O(log n)* time.
 @docs map, foldl, foldr, filter, partition
 
 # Combine
+@docs union, intersect, diff, merge
 -}
 
 
@@ -306,6 +307,62 @@ partition cmp set =
         )
         ( empty, empty )
         set
+
+
+
+-- combine
+
+
+{-| TODO docs
+-}
+union : Dict comparable v -> Dict comparable v -> Dict comparable v
+union d1 d2 =
+    foldl insert d2 d1
+
+
+{-| TODO docs
+-}
+intersect : Dict comparable v -> Dict comparable v -> Dict comparable v
+intersect d1 d2 =
+    filter (\key _ -> member key d2) d1
+
+
+{-| TODO: docs
+-}
+diff : Dict comparable v -> Dict comparable v -> Dict comparable v
+diff =
+    foldl (\key _ acc -> remove key acc)
+
+
+{-| TODO: docs
+-}
+merge :
+    (comparable -> a -> result -> result)
+    -> (comparable -> a -> b -> result -> result)
+    -> (comparable -> b -> result -> result)
+    -> Dict comparable a
+    -> Dict comparable b
+    -> result
+    -> result
+merge leftStep bothStep rightStep left right acc =
+    let
+        stepState rKey rValue ( list, result ) =
+            case list of
+                [] ->
+                    ( list, rightStep rKey rValue result )
+
+                ( lKey, lValue ) :: rest ->
+                    if lKey < rKey then
+                        stepState rKey rValue ( rest, leftStep lKey lValue result )
+                    else if lKey > rKey then
+                        ( list, rightStep rKey rValue result )
+                    else
+                        ( rest, bothStep lKey lValue rValue result )
+
+        ( leftovers, intermediateResult ) =
+            foldl stepState ( toList left, acc ) right
+    in
+        List.foldl (\( k, v ) result -> leftStep k v result) intermediateResult leftovers
 
 
 
