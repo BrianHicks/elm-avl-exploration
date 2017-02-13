@@ -4,7 +4,7 @@ module Dict.Avl
         , empty
         , singleton
         , insert
-          -- , update
+        , update
         , remove
         , isEmpty
         , member
@@ -35,7 +35,7 @@ Insert, remove, and query operations all take *O(log n)* time.
 @docs Dict
 
 # Build
-@docs empty, singleton, insert, remove
+@docs empty, singleton, insert, update, remove
 
 # Query
 @docs isEmpty, member, get, size
@@ -102,7 +102,15 @@ insert newKey newValue set =
                 Dict bal key newValue left right
 
 
--- TODO: update : comparable -> (Maybe v -> Maybe v) -> Dict comparable v -> Dict comparable v
+{-| TODO document
+-}
+update : comparable -> (Maybe v -> Maybe v) -> Dict comparable v -> Dict comparable v
+update key updater source =
+    source
+        |> get key
+        |> updater
+        |> Maybe.map (\value -> insert key value source)
+        |> Maybe.withDefault (remove key source)
 
 
 {-| TODO document
