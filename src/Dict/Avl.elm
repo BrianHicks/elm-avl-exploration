@@ -26,8 +26,8 @@ module Dict.Avl
         )
 
 {-| A dictionary mapping unique keys to values. The keys can be any comparable
-type. This includes Int, Float, Time, Char, String, and tuples or lists of
-comparable types.
+type. This includes `Int`, `Float`, `Time`, `Char`, `String`, and tuples or
+lists of comparable types.
 
 Insert, remove, and query operations all take *O(log n)* time.
 
@@ -38,10 +38,10 @@ Insert, remove, and query operations all take *O(log n)* time.
 @docs empty, singleton, insert, update, remove
 
 # Query
-@docs isEmpty, member, get, size, keys, values
+@docs isEmpty, member, get, size
 
 # Lists
-@docs toList, fromList
+@docs keys, values, toList, fromList
 
 # Transform
 @docs map, foldl, foldr, filter, partition
@@ -51,7 +51,9 @@ Insert, remove, and query operations all take *O(log n)* time.
 -}
 
 
-{-| TODO document
+{-| A dictionary of keys and values. So a `(Dict String User)` is a dictionary
+that lets you look up a `String` (such as user names) and find the associated
+`User`.
 -}
 type Dict k v
     = Dict Int k v (Dict k v) (Dict k v)
@@ -62,14 +64,14 @@ type Dict k v
 -- build
 
 
-{-| TODO document
+{-| Create an empty dictionary.
 -}
 empty : Dict k v
 empty =
     Empty
 
 
-{-| TODO document
+{-| Create a dictionary with one key-value pair.
 -}
 singleton : comparable -> v -> Dict comparable v
 singleton key value =
@@ -86,7 +88,8 @@ dict key value left right =
         right
 
 
-{-| TODO document
+{-| Insert a key-value pair into a dictionary. Replaces value when there is
+a collision.
 -}
 insert : comparable -> v -> Dict comparable v -> Dict comparable v
 insert newKey newValue set =
@@ -103,7 +106,7 @@ insert newKey newValue set =
                 Dict bal key newValue left right
 
 
-{-| TODO document
+{-| Update the value of a dictionary for a specific key with a given function.
 -}
 update : comparable -> (Maybe v -> Maybe v) -> Dict comparable v -> Dict comparable v
 update key updater source =
@@ -114,7 +117,8 @@ update key updater source =
         |> Maybe.withDefault (remove key source)
 
 
-{-| TODO document
+{-| Remove a key-value pair from a dictionary. If the key is not found,
+no changes are made.
 -}
 remove : comparable -> Dict comparable v -> Dict comparable v
 remove item set =
@@ -133,10 +137,10 @@ remove item set =
 
 
 -- query
--- TODO: iEmpty : Dict k v -> Bool
 
 
-{-| TODO document
+{-| Determine if a dictionary is empty.
+    isEmpty empty == True
 -}
 isEmpty : Dict k v -> Bool
 isEmpty set =
@@ -148,14 +152,22 @@ isEmpty set =
             False
 
 
-{-| TODO document
+{-| Determine if a key is in a dictionary.
 -}
 member : comparable -> Dict comparable v -> Bool
 member item set =
     get item set /= Nothing
 
 
-{-| TODO document
+{-| Get the value associated with a key. If the key is not found, return
+`Nothing`. This is useful when you are not sure if a key will be in the
+dictionary.
+
+    animals = fromList [ ("Tom", Cat), ("Jerry", Mouse) ]
+
+    get "Tom"   animals == Just Cat
+    get "Jerry" animals == Just Mouse
+    get "Spike" animals == Nothing
 -}
 get : comparable -> Dict comparable v -> Maybe v
 get item set =
@@ -172,21 +184,23 @@ get item set =
                 Just value
 
 
-{-| TODO document
+{-| Determine the number of key-value pairs in the dictionary.
 -}
 size : Dict comparable v -> Int
 size =
     foldl (\_ _ acc -> acc + 1) 0
 
 
-{-| TODO document
+{-| Get all of the keys in a dictionary, sorted from lowest to highest.
+    keys (fromList [(0,"Alice"),(1,"Bob")]) == [0,1]
 -}
 keys : Dict comparable v -> List comparable
 keys =
     toList >> List.map Tuple.first
 
 
-{-| TODO document
+{-| Get all of the values in a dictionary, in the order of their keys.
+    values (fromList [(0,"Alice"),(1,"Bob")]) == ["Alice", "Bob"]
 -}
 values : Dict comparable v -> List v
 values =
@@ -203,14 +217,15 @@ height set =
             height
 
 
-{-| TODO: docs
+{-| Convert an association list into a dictionary.
 -}
 fromList : List ( comparable, v ) -> Dict comparable v
 fromList items =
     List.foldl (uncurry insert) empty items
 
 
-{-| TODO: docs
+{-| Convert a dictionary into an association list of key-value pairs, sorted by
+keys.
 -}
 toList : Dict comparable v -> List ( comparable, v )
 toList =
@@ -225,7 +240,7 @@ toList =
 -- transform
 
 
-{-| TODO: docs
+{-| Apply a function to all values in a dictionary.
 -}
 map : (comparable -> a -> b) -> Dict comparable a -> Dict comparable b
 map fn set =
@@ -235,7 +250,8 @@ map fn set =
         set
 
 
-{-| TODO: docs
+{-| Fold over the key-value pairs in a dictionary, in order from lowest
+key to highest key.
 -}
 foldl : (comparable -> v -> b -> b) -> b -> Dict comparable v -> b
 foldl fn acc set =
@@ -257,7 +273,8 @@ foldl fn acc set =
                 accRight
 
 
-{-| TODO: docs
+{-| Fold over the key-value pairs in a dictionary, in order from highest
+key to lowest key.
 -}
 foldr : (comparable -> v -> b -> b) -> b -> Dict comparable v -> b
 foldr fn acc set =
@@ -279,7 +296,7 @@ foldr fn acc set =
                 accLeft
 
 
-{-| TODO: docs
+{-| Keep a key-value pair when it satisfies a predicate.
 -}
 filter : (comparable -> v -> Bool) -> Dict comparable v -> Dict comparable v
 filter cmp set =
@@ -294,7 +311,9 @@ filter cmp set =
         set
 
 
-{-| TODO: docs
+{-| Partition a dictionary according to a predicate. The first dictionary
+contains all key-value pairs which satisfy the predicate, and the second
+contains the rest.
 -}
 partition : (comparable -> v -> Bool) -> Dict comparable v -> ( Dict comparable v, Dict comparable v )
 partition cmp set =
@@ -313,28 +332,38 @@ partition cmp set =
 -- combine
 
 
-{-| TODO docs
+{-| Combine two dictionaries. If there is a collision, preference is given
+to the first dictionary.
 -}
 union : Dict comparable v -> Dict comparable v -> Dict comparable v
 union d1 d2 =
     foldl insert d2 d1
 
 
-{-| TODO docs
+{-| Keep a key-value pair when its key appears in the second dictionary.
+Preference is given to values in the first dictionary.
 -}
 intersect : Dict comparable v -> Dict comparable v -> Dict comparable v
 intersect d1 d2 =
     filter (\key _ -> member key d2) d1
 
 
-{-| TODO: docs
+{-| Keep a key-value pair when its key does not appear in the second dictionary.
 -}
 diff : Dict comparable v -> Dict comparable v -> Dict comparable v
 diff =
     foldl (\key _ acc -> remove key acc)
 
 
-{-| TODO: docs
+{-| The most general way of combining two dictionaries. You provide three
+accumulators for when a given key appears:
+
+  1. Only in the left dictionary.
+  2. In both dictionaries.
+  3. Only in the right dictionary.
+
+You then traverse all the keys from lowest to highest, building up whatever
+you want.
 -}
 merge :
     (comparable -> a -> result -> result)
