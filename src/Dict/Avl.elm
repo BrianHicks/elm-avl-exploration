@@ -93,14 +93,13 @@ insert newKey newValue set =
         Empty ->
             singleton newKey newValue
 
-        Dict _ key value left right ->
+        Dict bal key value left right ->
             if newKey < key then
                 dict key value (insert newKey newValue left) right |> balance
             else if newKey > key then
                 dict key value left (insert newKey newValue right) |> balance
             else
-                set
-
+                Dict bal key newValue left right
 
 
 -- TODO: update : comparable -> (Maybe v -> Maybe v) -> Dict comparable v -> Dict comparable v
@@ -185,7 +184,7 @@ height set =
 -}
 fromList : List ( comparable, v ) -> Dict comparable v
 fromList items =
-    List.foldr (uncurry insert) empty items
+    List.foldl (uncurry insert) empty items
 
 
 {-| TODO: docs
