@@ -178,6 +178,20 @@ size =
     foldl (\_ _ acc -> acc + 1) 0
 
 
+{-| TODO document
+-}
+keys : Dict comparable v -> List comparable
+keys =
+    toList >> List.map Tuple.first
+
+
+{-| TODO document
+-}
+values : Dict comparable v -> List v
+values =
+    toList >> List.map Tuple.second
+
+
 height : Dict comparable v -> Int
 height set =
     case set of
