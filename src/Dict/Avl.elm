@@ -405,21 +405,27 @@ balance set =
             set
 
         Dict _ key value left right ->
-            if heightDiff set == -2 && heightDiff left == 1 then
-                -- left leaning tree with right-leaning left subtree. Rotate left, then right.
-                dict key value (rotl left) right |> rotr
-            else if heightDiff set < -1 then
-                -- left leaning tree, generally. Rotate right.
-                rotr set
-            else if heightDiff set == 2 && heightDiff right == -1 then
-                -- right leaning tree with left-leaning right subtree. Rotate right, then left.
-                dict key value left (rotr right) |> rotl
-            else if heightDiff set > 1 then
-                -- right leaning tree, generally. Rotate left.
-                rotl set
-            else
-                -- diff is -1, 0, or 1. Already balanced, no operation required.
-                set
+            let
+                setDiff =
+                    heightDiff set
+            in
+                if setDiff < -1 then
+                    if heightDiff left == 1 then
+                        -- left leaning tree with right-leaning left subtree. Rotate left, then right.
+                        dict key value (rotl left) right |> rotr
+                    else
+                        -- left leaning tree, generally. Rotate right.
+                        rotr set
+                else if setDiff > 1 then
+                    if heightDiff right == -1 then
+                        -- right leaning tree with left-leaning right subtree. Rotate right, then left.
+                        dict key value left (rotr right) |> rotl
+                    else
+                        -- right leaning tree, generally. Rotate left.
+                        rotl set
+                else
+                    -- diff is -1, 0, or 1. Already balanced, no operation required.
+                    set
 
 
 heightDiff : Dict comparable v -> Int
