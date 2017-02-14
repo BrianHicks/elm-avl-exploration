@@ -57,6 +57,7 @@ that lets you look up a `String` (such as user names) and find the associated
 -}
 type Dict k v
     = Dict Int k v (Dict k v) (Dict k v)
+    | Singleton k v
     | Empty
 
 
@@ -75,7 +76,7 @@ empty =
 -}
 singleton : comparable -> v -> Dict comparable v
 singleton key value =
-    Dict 1 key value empty empty
+    Singleton key value
 
 
 dict : comparable -> v -> Dict comparable v -> Dict comparable v -> Dict comparable v
@@ -97,13 +98,21 @@ insert newKey newValue set =
         Empty ->
             singleton newKey newValue
 
-        Dict bal key value left right ->
-            if newKey < key then
-                dict key value (insert newKey newValue left) right |> balance
-            else if newKey > key then
-                dict key value left (insert newKey newValue right) |> balance
+        Singleton key value ->
+            if newKey == key then
+                Singleton key newValue
+            else if newKey < key then
+                Dict 2 key value (Singleton newKey newValue) Empty
             else
+                Dict 2 key value Empty (Singleton newKey newValue)
+
+        Dict bal key value left right ->
+            if newKey == key then
                 Dict bal key newValue left right
+            else if newKey < key then
+                dict key value (insert newKey newValue left) right |> balance
+            else
+                dict key value left (insert newKey newValue right) |> balance
 
 
 {-| Update the value of a dictionary for a specific key with a given function.
@@ -125,6 +134,12 @@ remove item set =
     case set of
         Empty ->
             set
+
+        Singleton key _ ->
+            if item == key then
+                Empty
+            else
+                set
 
         Dict _ key value left right ->
             if item < key then
@@ -175,6 +190,12 @@ get item set =
         Empty ->
             Nothing
 
+        Singleton key value ->
+            if item == key then
+                Just value
+            else
+                Nothing
+
         Dict _ key value left right ->
             if item < key then
                 get item left
@@ -212,6 +233,9 @@ height set =
     case set of
         Empty ->
             0
+
+        Singleton _ _ ->
+            1
 
         Dict height _ _ _ _ ->
             height
@@ -259,6 +283,9 @@ foldl fn acc set =
         Empty ->
             acc
 
+        Singleton key value ->
+            fn key value acc
+
         Dict _ key value left right ->
             let
                 accLeft =
@@ -281,6 +308,9 @@ foldr fn acc set =
     case set of
         Empty ->
             acc
+
+        Singleton key value ->
+            fn key value acc
 
         Dict _ key value left right ->
             let
@@ -404,6 +434,9 @@ balance set =
         Empty ->
             set
 
+        Singleton _ _ ->
+            set
+
         Dict _ key value left right ->
             let
                 setDiff =
@@ -434,6 +467,9 @@ heightDiff set =
         Empty ->
             0
 
+        Singleton _ _ ->
+            0
+
         Dict _ _ _ left right ->
             height right - height left
 
@@ -442,6 +478,9 @@ balanceSubtrees : Dict comparable v -> Dict comparable v
 balanceSubtrees set =
     case set of
         Empty ->
+            set
+
+        Singleton _ _ ->
             set
 
         Dict _ key value left right ->
