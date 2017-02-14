@@ -1,4 +1,4 @@
-# Elm AVL Exploration
+# Elm AVL Exploration [![Build Status](https://travis-ci.org/BrianHicks/elm-avl-exploration.svg?branch=master)](https://travis-ci.org/BrianHicks/elm-avl-exploration)
 
 A drop-in reimplementation of Elm's [`Dict`](http://package.elm-lang.org/packages/elm-lang/core/latest/Dict) and [`Set`](http://package.elm-lang.org/packages/elm-lang/core/latest/Set) using [AVL trees](https://en.wikipedia.org/wiki/AVL_tree) instead of [red-black trees](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree).
 
