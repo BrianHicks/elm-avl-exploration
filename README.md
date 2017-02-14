@@ -19,13 +19,13 @@ Data from my machine is below. You can replicate by building `benchmark/Main.elm
 
 ### `get`
 
-`Dict.Avl.get` is about 15% faster than `Dict.get`, on average.
+`Dict.Avl.get` is about 18% faster than `Dict.get`, on average.
 
 ![get performance](docs/get-performance.png)
 
 ### `toList`
 
-`Dict.Avl.toList` is about 25% faster than `Dict.toList`, on average.
+`Dict.Avl.toList` is about 26% faster than `Dict.toList`, on average.
 `toList` is implemented using `foldl`, which may be an indicator of performance there.
 This advantage is mainly found on sets of 10 or fewer items.
 
