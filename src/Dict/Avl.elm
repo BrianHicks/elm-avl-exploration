@@ -492,6 +492,9 @@ rotl set =
     case set of
         Dict _ key value lessThans (Dict _ subKey subValue betweens greaterThans) ->
             dict subKey subValue (dict key value lessThans betweens) greaterThans
+            
+        Dict _ key value lessThans (Singleton subKey subValue) ->
+            dict subKey subValue (dict key value lessThans empty) empty
 
         _ ->
             set
@@ -502,6 +505,9 @@ rotr set =
     case set of
         Dict _ key value (Dict _ subKey subValue lessThans betweens) greaterThans ->
             dict subKey subValue lessThans (dict key value betweens greaterThans)
+
+        Dict _ key value (Singleton subKey subValue) greaterThans ->
+            dict subKey subValue empty (dict key value empty greaterThans)
 
         _ ->
             set
