@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
-    "summary": "helpful summary of your project, less than 80 characters",
-    "repository": "https://github.com/user/project.git",
+    "summary": "Drop-in replacement for Dict using AVL trees. Faster retrieval, slower modification.",
+    "repository": "https://github.com/BrianHicks/elm-avl-exploration.git",
     "license": "BSD3",
     "source-directories": [
         "src"
