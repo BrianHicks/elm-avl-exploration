@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "summary": "Drop-in replacement for Dict using AVL trees. Faster retrieval, slower modification.",
+    "summary": "Drop-in replacement for Dict using AVL trees. Faster get, slower insert.",
     "repository": "https://github.com/BrianHicks/elm-avl-exploration.git",
     "license": "BSD3",
     "source-directories": [
